@@ -9,7 +9,7 @@ const coursesRoutes = require('./routes/courses');
 const app = express();
 
 // Middleware
-app.use();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
