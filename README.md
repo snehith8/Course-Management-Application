@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Course Management Application
 
 A full-stack course management application built with MERN stack (MongoDB/SQLite, Express, React, Node.js).
