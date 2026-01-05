@@ -12,7 +12,9 @@ router.post(
   [
     body('name').notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters'),
   ],
   async (req, res) => {
     try {
@@ -23,7 +25,9 @@ router.post(
 
       const { name, email, password } = req.body;
 
-      const existingUser = await getRow('SELECT * FROM users WHERE email = ?', [email]);
+      const existingUser = await getRow('SELECT * FROM users WHERE email = ?', [
+        email,
+      ]);
       if (existingUser) {
         return res.status(409).json({ error: 'Email already registered' });
       }
@@ -31,7 +35,7 @@ router.post(
       const hashedPassword = await bcrypt.hash(password, 10);
       const result = await run(
         'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-        [name, email, hashedPassword]
+        [name, email, hashedPassword],
       );
 
       res.status(201).json({
@@ -42,7 +46,7 @@ router.post(
       console.error('Register error:', error);
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 );
 
 router.post(
@@ -70,9 +74,13 @@ router.post(
         return res.status(401).json({ error: 'Invalid email or password' });
       }
 
-      const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        {
+          expiresIn: '7d',
+        },
+      );
 
       res.json({
         message: 'Login successful',
@@ -87,9 +95,8 @@ router.post(
       console.error('Login error:', error);
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 );
-
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
